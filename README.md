@@ -77,19 +77,114 @@
 
 # Output Values:
 - Makes information about infra available on the command line , and can expose information for other terraform config's to use
+  output "public_ip"
+  { value = aws_eip.lb.public_ip
+  } 
+This above code will give you the public ip value when you do the terraform apply.
+- value = aws_eip.lb
+- If we use value just like above it will show attribute values of that particular resource fully.
 
+# Overview of TF Variables
+- Create a central-file.tf (or) variables.tf and put your variables and values here something like below
+  variable var_ip
+  {
+  	default = 10.0.06/32
+  }
 
+  variable var_port
+  {
+  	default = 8080
+  }
 
+- Use these variables when you are writing your code to create the ingress rules, something like below
+  resource <<ingress>> "allow_tls_ipv4"
+  {
+	security_group_id	= aws_security_group.allow_tls.id
+	cidr_ipv4 		= var.var_ip
+	port			= var.var_port
+  }
 
+# Terraform Variables - Practical
+- Same as above, but, he showed by creating thats it
 
+# Variable Definitions File (TFVars)
+- Main TF Config File, variables.tf, terraform.tfvars file (Define values associated with your vairables here) , this is the structure you can ideally have
+- terraform plan --var-file="dev.tfvars" (or) "prod.tfvars"
+- if default value is added and no data in .tfvars then default value is picked
+- if you have default value and value in .tfvars both then value from .tfvars will only be picked up and not the other one
+- if you dont name the file as terraform.tfvars then we are asked the variable value when we are planning the terraform plan
+- if we do not specify any specific .tfvars file then we can do like --var-file prod.tfvars so that variable values are picked from that particular tfvars file and plan is run smoothly
 
+# Approaches for Variable Assignment (NEW)
+- If you have not defined a value for the variable. TF will ask you to input the value in CLI Prompt when you run the TF plan/apply operation both.
+- Variable Defaults, Variable Definition File (*.tfvars), Env Variables, Setting variables in Command Line **(4 Methods to define/provide values to the variables)**
+- Example to provide variable value as part of command Line
+  terraform plan -var="instance_type=m5.large"
+- Example to provide variable value as part of ENV Variable (There is a specific variable format which you should use)
+  TF_VAR_instance_type = m5.large **(You should addd this in system properties and not just on command line)**
+  echo %TF_VAR_instance_type% will show you the value you have set and then you can use this variable
 
+# Setting ENV Variable in Linux
+- export TF_VAR_instance_type = t2.large
+- echo $TF_VAR_instance_type
 
+# Variable Definition Precedence
+- Order of Variable Preference --> Env Variables, terraform.tfvars, terraform.tfvars.json, *.auto.tfvars, *.auto.tfvars.json, any -var & -var-file options in command line
+- Which ever is used at last, that is the value it picks up and not the older one
 
+# Data Types in TF
+- variable username
+  {
+  	type = number
+  }
 
+# Data Type - List
+- variable "my-list"
+  {
+  	type = list(number)
+  	default = [1,2,3,4,5]
+  }
 
+# Data Type - Map
+- Map is usually a key, value pair data type which we can use and can be used most of the times for tags
+- variable "my-map"
+  {
+  	type = map
+  	default = {
+  		Name = "Alice"
+  		Team = "Payments"
+  	}
+  }
 
+  output "variable_value"
+  {
+  	value = var.my_map
+  }
 
+# Fetching Data from Maps and List in variable
+- resource "aws_instance" "my-ec2"
+  {
+  	ami = "ami-123456"
+  	instance_type = var.types["us-west-2"]
+  	instance_type = var.list[1]
+  }
+
+  variable "list"
+  {
+	type = list
+	default = ["m5.large","t2.medium","m5.xlarge"]
+  }	
+
+  vairable "types"
+  {
+	type = map
+	default =
+	{
+		us-east-1 = "t2.micro"
+  		us-west-2 = "t2.nano"
+  		ap-south-1 = "t2.small"
+	}
+  }
 
 
 
