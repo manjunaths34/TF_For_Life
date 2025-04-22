@@ -186,6 +186,86 @@ This above code will give you the public ip value when you do the terraform appl
 	}
   }
 
+# The Count Meta-Argument
+- UseCase is when you need to spin up more than 1 resource (example : ec2 instance), can be achieved using the count argument
+- resource aws_instance my-ec2
+- {
+	ami = ami-12345
+	instance_type = t2.micro
+	count = 3
+  }
+- This above code will bring issues where although 3 instances are spun up but all will have no names and even if we add a tag with a name, all will have the same name which is not right. This is a challenege and can be addressed further.
+- Above code will not work as-is for all resources, for example in IAM users, you can't create 3 users of same name, you can create 1 but not other 2 with same names.
+
+# Count Index
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
